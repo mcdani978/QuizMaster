@@ -8,41 +8,73 @@ using UnityEngine.UI;
 
 public class Quiz : MonoBehaviour
 {
+    [Header("Questions")]
     [SerializeField] TextMeshProUGUI questionText;
     [SerializeField] QuestionSO question;
+
+    [Header("Answers")]
     [SerializeField] GameObject[] answerButtons;
     int int_correctAnswerIndex;
+    bool bol_hasAnsweredEarly;
+
+    [Header("Button Colors")]
     [SerializeField] Sprite Spr_defaultAnswerSprite;
     [SerializeField] Sprite Spr_CorrectAnswerSprite;
 
-
+    [Header("Timer")]
+    [SerializeField] Image Img_timerImage;
+    Timer Tmr_timer;
 
     void Start()
     {
+        Tmr_timer = FindObjectOfType<Timer>();
         GetNextQuestion();
-      //DisplayQuestion();
+        //DisplayQuestion();
+    }
+
+    void Update()
+    {
+        Img_timerImage.fillAmount = Tmr_timer.Flt_fillFraction;
+        if (Tmr_timer.Bol_loadNextQuestion)
+        {
+            bol_hasAnsweredEarly = false;
+            GetNextQuestion();
+            Tmr_timer.Bol_loadNextQuestion = false;
+        }
+        else if(!bol_hasAnsweredEarly && !Tmr_timer.Bol_isAnsweringQuestion)
+        {
+            DisplayAnswer(-1);
+            SetButtonState(false);
+        }
     }
 
     public void OnAnswerSelected(int index)
         {
-            Image Img_buttonImage;
-
-            if(index == question.Int_GetCorrectAnswerIndex())
-            {
-                questionText.text = "Correct!";
-                Img_buttonImage = answerButtons[index].GetComponent<Image>();
-                Img_buttonImage.sprite = Spr_CorrectAnswerSprite;
-            }
-            else
-            {
-                int_correctAnswerIndex = question.Int_GetCorrectAnswerIndex();
-                string Str_Correctanswer = question.GetAnswer(int_correctAnswerIndex);
-                questionText.text = "Sorry, the correct answer was;\n" + Str_Correctanswer;
-                Img_buttonImage = answerButtons[int_correctAnswerIndex].GetComponent<Image>();
-                Img_buttonImage.sprite = Spr_CorrectAnswerSprite;
-            }
+            bol_hasAnsweredEarly = true;
+            DisplayAnswer(index);
             SetButtonState(false);
+            Tmr_timer.CancelTimer();
         }
+
+    void DisplayAnswer(int index)
+    {
+        Image Img_buttonImage;
+
+        if (index == question.Int_GetCorrectAnswerIndex())
+        {
+            questionText.text = "Correct!";
+            Img_buttonImage = answerButtons[index].GetComponent<Image>();
+            Img_buttonImage.sprite = Spr_CorrectAnswerSprite;
+        }
+        else
+        {
+            int_correctAnswerIndex = question.Int_GetCorrectAnswerIndex();
+            string Str_Correctanswer = question.GetAnswer(int_correctAnswerIndex);
+            questionText.text = "Sorry, the correct answer was;\n" + Str_Correctanswer;
+            Img_buttonImage = answerButtons[int_correctAnswerIndex].GetComponent<Image>();
+            Img_buttonImage.sprite = Spr_CorrectAnswerSprite;
+        }
+    }
 
     void GetNextQuestion()
     {
