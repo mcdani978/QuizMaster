@@ -12,10 +12,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ad2020764b3a0744ab9d1adcdde2ebdb, type: 3}
   m_Name: Question 1
   m_EditorClassIdentifier: 
-  Str_question: Enter new question text here
+  Str_question: Who was the first president?
   Str_answers:
-  - 
-  - 
-  - 
-  - 
+  - George Washington
+  - Donald Trump
+  - Joe Biden
+  - Barack Obama
   Int_CorrectAnswerIndex: 0
